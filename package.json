@@ -1,0 +1,28 @@
+{
+  "name": "fullstack-typescript",
+  "version": "1.0.0",
+  "description": "Fullstack course part 9, typescript",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm test",
+    "ts-node": "ts-node",
+    "calculateBmi": "npm run ts-node -- bmiCalculator.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TuuliTG/Fullstack-TypeScript.git"
+  },
+  "keywords": [
+    "fullstack"
+  ],
+  "author": "Tuuli Toivanen-Gripentrog",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/TuuliTG/Fullstack-TypeScript/issues"
+  },
+  "homepage": "https://github.com/TuuliTG/Fullstack-TypeScript#readme",
+  "devDependencies": {
+    "ts-node": "^10.9.1",
+    "typescript": "^5.2.2"
+  }
+}
