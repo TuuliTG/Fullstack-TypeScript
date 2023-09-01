@@ -1,6 +1,9 @@
+import { isNotNumber } from "./utils/helpers";
+
 type Rating = 1 | 2 | 3;
 
 const calculateExercises = (trainingHours: number[], target: number) => {
+  trainingHours.forEach(h => console.log(h))
   const avg = calculateAvg(trainingHours)
   const rating = getRating(avg, target)
   const result: Result = {
@@ -67,4 +70,38 @@ interface Result {
   ratingDescription: string
 }
 
-calculateExercises([3, 0, 1, 1, 0, 2, 1], 2)
+interface Arguments {
+  target: number;
+  hoursPerDay: number[];
+}
+
+const parseArguments = (args: string[]): Arguments => {
+  if (args.length < 4) throw new Error('Not enough arguments');
+  if (args.length > 50) throw new Error('Too many arguments');
+
+  const input = args.slice(2, args.length)
+  input.forEach(i => {
+    if (isNotNumber(i)) {
+      throw new Error('Provided values were not numbers!');  
+    }
+  })
+  const hoursPerDay: Array<number> = process.argv
+  .slice(3, process.argv.length)
+  .map((item) => Number(item));
+
+  return {
+    target: Number(args[2]),
+    hoursPerDay
+  }
+}
+try {
+  const {target, hoursPerDay} = parseArguments(process.argv);
+  calculateExercises(hoursPerDay, target)
+} catch (error: unknown) {
+  let errorMessage = 'Something bad happened.'
+  if (error instanceof Error) {
+    errorMessage += ' Error: ' + error.message;
+  }
+  console.log(errorMessage);
+}
+
