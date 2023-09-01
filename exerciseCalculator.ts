@@ -6,19 +6,21 @@ const calculateExercises = (trainingHours: number[], target: number) => {
   trainingHours.forEach(h => console.log(h))
   const avg = calculateAvg(trainingHours)
   const rating = getRating(avg, target)
-  const result: Result = {
-    numberOfDays: trainingHours.length,
-    numberOfTrainingDays: trainingHours.filter(h => h !== 0).length,
-    targetValue: target,
-    avgTime: avg,
-    targetReached: avg >= target,
-    rating: rating,
-    ratingDescription: getRatingDescription(rating)
+  if (rating) {
+    const result: Result = {
+      numberOfDays: trainingHours.length,
+      numberOfTrainingDays: trainingHours.filter(h => h !== 0).length,
+      targetValue: target,
+      avgTime: avg,
+      targetReached: avg >= target,
+      rating: rating,
+      ratingDescription: getRatingDescription(rating)
+    }
+    printResult(result)
   }
-  printResult(result)
 }
 
-const getRating = (avg: number, target: number): Rating => {
+const getRating = (avg: number, target: number): Rating | undefined => {
   const percentage: number = avg / target
   switch (true) {
     case percentage < 0.7:
@@ -27,6 +29,8 @@ const getRating = (avg: number, target: number): Rating => {
       return 2;
     case percentage > 1:
       return 3
+    default:
+      return
   }
 }
 

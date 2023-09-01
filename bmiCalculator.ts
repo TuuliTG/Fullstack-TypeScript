@@ -4,7 +4,7 @@ const calculateBmi = (height: number, weight: number) => {
   console.log(findCategory(bmi))
 }
 
-const findCategory = (bmi: number): string => {
+const findCategory = (bmi: number): string | undefined => {
   switch(true) {
     case bmi < 18.5:
       return "Underweight";
@@ -14,6 +14,8 @@ const findCategory = (bmi: number): string => {
       return "Overweight";
     case bmi >= 30.0:
       return "Obese"
+    default:
+      return
   }
 }
 
