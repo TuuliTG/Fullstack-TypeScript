@@ -10,29 +10,29 @@ app.get('/hello', (_req, res) => {
 
 app.get('/bmi', (req, res) => {
   const { height, weight } = req.query;
-  if (height === undefined || weight === undefined || isNotNumber(height) || isNotNumber(weight)) {
+  if (height === undefined || weight === undefined || isNotNumber(height) || isNotNumber(weight)) {
     const errorMessage = {
       error: "malformatted parameters"
-    }
-    res.send(JSON.stringify(errorMessage))
+    };
+    res.send(JSON.stringify(errorMessage));
   }
-  let response = {}
+  let response = {};
   try {
     const result = calculateBmi(Number(height), Number(weight));
     response = {
       height: height,
       weight: weight,
       bmi: result
-    }
+    };
   } catch (error: unknown) {
-    let errorMessage = 'Something bad happened.'
+    let errorMessage = 'Something bad happened.';
     if (error instanceof Error) {
       errorMessage += ' Error: ' + error.message;
     }
     console.log(errorMessage);
     res.send("Something went wrong");
   }
-  res.send(JSON.stringify(response))
+  res.send(JSON.stringify(response));
 });
 
 const PORT = 3003;

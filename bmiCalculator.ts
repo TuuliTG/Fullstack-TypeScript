@@ -1,13 +1,13 @@
 export const calculateBmi = (height: number, weight: number): string => {
   const heightInMeters = height/100;
-  const bmi = weight/Math.pow(heightInMeters, 2)
-  const response = findCategory(bmi)
+  const bmi = weight/Math.pow(heightInMeters, 2);
+  const response = findCategory(bmi);
   if (response) {
-    return response
+    return response;
   } else {
-    throw new Error('Something went wrong')
+    throw new Error('Something went wrong');
   }
-}
+};
 
 const findCategory = (bmi: number): string | undefined => {
   switch(true) {
@@ -18,8 +18,8 @@ const findCategory = (bmi: number): string | undefined => {
     case bmi < 30.0:
       return "Overweight";
     case bmi >= 30.0:
-      return "Obese"
+      return "Obese";
     default:
-      return
+      return;
   }
-}
+};
