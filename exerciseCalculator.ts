@@ -1,8 +1,8 @@
 import { isNotNumber } from "./utils/helpers";
-
 type Rating = 1 | 2 | 3;
 
-const calculateExercises = (trainingHours: number[], target: number) => {
+export const calculateExercises = (trainingHours: number[], target: number): Result | undefined => {
+  checkArguments(trainingHours, target);
   trainingHours.forEach(h => console.log(h));
   const avg = calculateAvg(trainingHours);
   const rating = getRating(avg, target);
@@ -17,8 +17,27 @@ const calculateExercises = (trainingHours: number[], target: number) => {
       ratingDescription: getRatingDescription(rating)
     };
     printResult(result);
+    return result;
+  } else {
+    return undefined;
   }
 };
+
+const checkArguments = (hoursPerDay: number[], target: number) => {
+  
+  if (hoursPerDay.length > 50) throw new Error('Too long input');
+
+  hoursPerDay.forEach(i => {
+    if (isNotNumber(i)) {
+      throw new Error('Provided values were not numbers!');
+    }
+  });
+  if (isNotNumber(target)) {
+    throw new Error('Provided values were not numbers!');
+  }
+};
+
+
 
 const getRating = (avg: number, target: number): Rating | undefined => {
   const percentage: number = avg / target;
@@ -73,39 +92,3 @@ interface Result {
   rating: number,
   ratingDescription: string
 }
-
-interface Arguments {
-  target: number;
-  hoursPerDay: number[];
-}
-
-const parseArguments = (args: string[]): Arguments => {
-  if (args.length < 4) throw new Error('Not enough arguments');
-  if (args.length > 50) throw new Error('Too many arguments');
-
-  const input = args.slice(2, args.length);
-  input.forEach(i => {
-    if (isNotNumber(i)) {
-      throw new Error('Provided values were not numbers!');  
-    }
-  });
-  const hoursPerDay: Array<number> = process.argv
-  .slice(3, process.argv.length)
-  .map((item) => Number(item));
-
-  return {
-    target: Number(args[2]),
-    hoursPerDay
-  };
-};
-try {
-  const {target, hoursPerDay} = parseArguments(process.argv);
-  calculateExercises(hoursPerDay, target);
-} catch (error: unknown) {
-  let errorMessage = 'Something bad happened.';
-  if (error instanceof Error) {
-    errorMessage += ' Error: ' + error.message;
-  }
-  console.log(errorMessage);
-}
-
