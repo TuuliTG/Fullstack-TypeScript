@@ -1,4 +1,4 @@
-import { DiaryEntry } from "./Types";
+import { DiaryEntry } from "./types";
 
 interface DiaryProps {
   entry: DiaryEntry

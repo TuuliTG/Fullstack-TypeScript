@@ -1,8 +1,9 @@
 import { useState } from "react"; 
-import { NewDiaryEntry, Visibility, Weather } from "./Types";
+import { NewDiaryEntry, Visibility, Weather } from "./types";
 
 interface EntryFormProps {
-  createNewEntry: (entry: NewDiaryEntry) => void
+  createNewEntry: (entry: NewDiaryEntry) => void,
+  errorMessage: string
 }
 
 export const AddEntryForm = (props: EntryFormProps) => {
@@ -29,6 +30,7 @@ export const AddEntryForm = (props: EntryFormProps) => {
   return (
     <div>
       <h1>Add a new diary entry:</h1>
+      <p style={{ color: 'red' }}>{props.errorMessage}</p>
       <form 
         onSubmit={(e) => {
           emptyFormAndSendPostRequest(e)
