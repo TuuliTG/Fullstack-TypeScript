@@ -15,11 +15,12 @@ function App() {
   }, [])
 
   const createNewEntry = async (newEntry: NewDiaryEntry) => {
-    
     const res = await postNewEntry(newEntry)
     if (typeof res === 'string') {
       console.log(res)
       setErrorMessage(res)
+    } else {
+      setDiaryEntries(diaryEntries.concat(res))
     }
   };
 
