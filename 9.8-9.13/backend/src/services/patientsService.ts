@@ -27,8 +27,13 @@ const addPatient = ( entry: NewPatientEntry ): PatientEntry => {
   return newPatientEntry;
 };
 
+const getPatientById = (id: string): PatientEntry | undefined => {
+  return patients.find(patient => patient.id === id);
+};
+
 export default {
   getEntries,
   getNonSensitivePatientEntries,
-  addPatient
+  addPatient,
+  getPatientById
 };
