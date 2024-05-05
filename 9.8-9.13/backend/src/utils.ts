@@ -1,4 +1,4 @@
-import { Gender, NewPatientEntry } from "./types"
+import { Gender, NewPatientEntry } from "./types";
 
 const isString = (text: unknown): text is string => {
   return typeof text === 'string' || text instanceof String;
@@ -25,9 +25,9 @@ const parseStringField = (value: unknown, fieldName: string): string => {
 const isDate = (date: string): boolean => {
   const dateFormat = /^\d{4}-\d{2}-\d{2}$/;
   if (!dateFormat.test(date)) {
-    return false
+    return false;
   }
-  return true
+  return true;
 };
 
 const parseDate = (date: unknown): string => {
@@ -42,10 +42,10 @@ const parseSsn = (ssn: unknown): string => {
     throw new Error('Incorrext ssn: ' + ssn);
   }
   return ssn;
-}
+};
 
 const toNewPatientEntry = (object: unknown): NewPatientEntry => {
-  console.log(object)
+  console.log(object);
   if ( !object || typeof object !== 'object' ) {
     throw new Error('Incorrect or missing data');
   }
@@ -61,6 +61,6 @@ const toNewPatientEntry = (object: unknown): NewPatientEntry => {
     return newEntry;
   }
   throw new Error('Incorrect data: some fields are missing');
-}
+};
 
 export default toNewPatientEntry;
