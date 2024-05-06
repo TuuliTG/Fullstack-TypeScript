@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { Gender, Patient } from "../../types";
-import { Typography } from '@mui/material';
+import { Typography, List, ListItem, ListItemIcon, ListItemText,  } from '@mui/material';
 import FemaleIcon from '@mui/icons-material/Female';
+import CircleIcon from '@mui/icons-material/Circle';
 import MaleIcon from '@mui/icons-material/Male';
 
 import {
@@ -52,6 +53,29 @@ const PatientListPage = ( ) => {
           <br></br>
           date of birth: {patient.dateOfBirth}
         </Typography>
+        <Typography variant="h6" style={{ marginBottom: "0.5em", marginTop: "1em" }}>
+          Entries:
+        </Typography>
+        <List>
+          {patient.entries.map (e => (
+            <ListItem key={e.id}>
+              <div>
+              {e.date}: {e.description}
+              <br/>
+              <List>
+                {(e.diagnosisCodes === undefined || e.diagnosisCodes?.length === 0) ?  <></> :
+                  e.diagnosisCodes.map (code => (
+                    <ListItem key={code}>
+                      <ListItemIcon><CircleIcon fontSize="small"/></ListItemIcon>
+                      <ListItemText primary={code}/>
+                    </ListItem>
+                ))}
+              </List>
+              </div>
+              
+            </ListItem>
+          ))}
+        </List>
       </div>
     );
   } else {
