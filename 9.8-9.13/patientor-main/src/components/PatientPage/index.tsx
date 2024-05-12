@@ -1,17 +1,20 @@
 import { useEffect, useState } from "react";
-import { Gender, Patient } from "../../types";
+import { Diagnosis, Gender, Patient } from "../../types";
 import { Typography, List, ListItem, ListItemIcon, ListItemText,  } from '@mui/material';
 import FemaleIcon from '@mui/icons-material/Female';
 import CircleIcon from '@mui/icons-material/Circle';
 import MaleIcon from '@mui/icons-material/Male';
+
+import diagnoseService from '../../services/diagnoses';
 
 import {
   useParams
 } from 'react-router-dom';
 import patientService from "../../services/patients";
 
-const PatientListPage = ( ) => {
+const PatientPage = () => {
   const [patient, setPatient] = useState<Patient>();
+  const [diagnoses, setDiagnoses] = useState<Diagnosis[]>([]);
   const id = useParams().id;
   
   useEffect(() => {
@@ -24,6 +27,14 @@ const PatientListPage = ( ) => {
     if (id) {
       void fetchPatient(id);
     }
+
+    const fetchDiagnoses = async () => {
+      const diagnoses = await diagnoseService.getAll();
+      setDiagnoses(diagnoses);
+    };
+    void fetchDiagnoses();
+
+
   }, [id]);
 
   const addGenderIcon = (p: Patient) => {
@@ -67,7 +78,7 @@ const PatientListPage = ( ) => {
                   e.diagnosisCodes.map (code => (
                     <ListItem key={code}>
                       <ListItemIcon><CircleIcon fontSize="small"/></ListItemIcon>
-                      <ListItemText primary={code}/>
+                      <ListItemText primary={`${code} ${diagnoses.find (d => d.code == code)?.name}`}/>
                     </ListItem>
                 ))}
               </List>
@@ -89,4 +100,4 @@ const PatientListPage = ( ) => {
   }
 };
 
-export default PatientListPage;
+export default PatientPage;
