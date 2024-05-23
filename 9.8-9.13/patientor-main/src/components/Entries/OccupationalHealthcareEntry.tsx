@@ -1,4 +1,4 @@
-import { OccupationalHealthcareEntry } from "../types";
+import { OccupationalHealthcareEntry } from "../../types";
 import WorkIcon from '@mui/icons-material/Work';
 import { Card, CardContent, Typography } from "@mui/material";
 import Diagnoseslisting from "./diagnosesListing";
@@ -17,7 +17,7 @@ const OccupationalHealthcareEntryListing: React.FC<{ entry: OccupationalHealthca
                 <Typography>Employer: {entry.employerName}</Typography>
             </CardContent>
         </Card>
-    )
-}
+    );
+};
 
 export default OccupationalHealthcareEntryListing;

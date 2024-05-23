@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import {List, ListItemIcon, ListItemText, ListItem, Typography } from "@mui/material";
-import { Entry, Diagnosis } from "../types";
+import { Entry, Diagnosis } from "../../types";
 import CircleIcon from '@mui/icons-material/Circle';
-import diagnoseService from '../services/diagnoses';
+import diagnoseService from '../../services/diagnoses';
 
 const Diagnoseslisting: React.FC<{ entry: Entry }> = ({ entry }) => {
     const [diagnoses, setDiagnoses] = useState<Diagnosis[]>([]);
@@ -16,7 +16,7 @@ const Diagnoseslisting: React.FC<{ entry: Entry }> = ({ entry }) => {
     }, []);
 
     if (entry.diagnosisCodes === undefined || entry.diagnosisCodes?.length === 0 ) {
-        return <></>
+        return <></>;
     }
 
     return (
@@ -31,7 +31,7 @@ const Diagnoseslisting: React.FC<{ entry: Entry }> = ({ entry }) => {
                 ))}
             </List>
         </div>
-    )
-}
+    );
+};
 
-export default Diagnoseslisting
+export default Diagnoseslisting;

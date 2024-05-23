@@ -1,4 +1,4 @@
-import { HospitalEntry } from "../types";
+import { HospitalEntry } from "../../types";
 import { Card, CardContent, Typography } from "@mui/material";
 import LocalHospitalIcon from '@mui/icons-material/LocalHospital';
 import Diagnoseslisting from "./diagnosesListing";
@@ -20,7 +20,7 @@ const HospitalEntryListing: React.FC<{ entry: HospitalEntry }> = ({ entry }) => 
                     <Typography>Diagnose by {entry.specialist}</Typography>
                 </CardContent>
             </Card>
-    )
-}
+    );
+};
 
 export default HospitalEntryListing;

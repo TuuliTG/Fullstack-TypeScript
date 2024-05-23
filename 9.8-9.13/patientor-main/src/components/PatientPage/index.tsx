@@ -8,7 +8,7 @@ import {
   useParams
 } from 'react-router-dom';
 import patientService from "../../services/patients";
-import EntryDetails from "../EntryDetails";
+import EntryDetails from "../Entries/EntryDetails";
 
 const PatientPage = () => {
   const [patient, setPatient] = useState<Patient>();
@@ -53,9 +53,14 @@ const PatientPage = () => {
           <br></br>
           date of birth: {patient.dateOfBirth}
         </Typography>
-        <Typography variant="h6" style={{ marginBottom: "0.5em", marginTop: "1em" }}>
-          Entries:
-        </Typography>
+        { patient.entries.length === 0 ? 
+          <Typography style={{ marginBottom: "0.5em", marginTop: "1em" }}>No entries</Typography>
+          :
+          <Typography variant="h6" style={{ marginBottom: "0.5em", marginTop: "1em" }}>
+            Entries:
+          </Typography>          
+        }
+        
         <List>
           {patient.entries.map (e => (
             <ListItem key={e.id}>

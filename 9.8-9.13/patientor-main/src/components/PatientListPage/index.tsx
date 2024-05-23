@@ -5,7 +5,7 @@ import axios from 'axios';
 import { PatientFormValues, Patient } from "../../types";
 import AddPatientModal from "../AddPatientModal";
 
-import HealthRatingBar from "../HealthRatingBar";
+import HealthRatingBar from "../Entries/HealthRatingBar";
 
 import patientService from "../../services/patients";
 
