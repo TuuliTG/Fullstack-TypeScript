@@ -1,5 +1,5 @@
 import patientsData from '../../data/patients';
-import { NewPatientEntry, NonSensitivePatientEntry, PatientEntry } from '../types';
+import { Entry, NewEntryWithoutId, NewPatientEntry, NonSensitivePatientEntry, PatientEntry } from '../types';
 import { v1 as uuid } from 'uuid';
 
 
@@ -26,6 +26,20 @@ const addPatient = ( entry: NewPatientEntry ): PatientEntry => {
   return newPatientEntry;
 };
 
+const addNewHealthEntry = ( entry: NewEntryWithoutId, patientId: string ): Entry => {
+  const newEntry = {
+    id: uuid(),
+    ...entry
+  };
+
+  patientsData.forEach((patient) => { 
+    if (patient.id === patientId) {
+      patient.entries.push(newEntry)
+    }
+  }) 
+  return newEntry;
+};
+
 const getPatientById = (id: string): PatientEntry | undefined => {
   return patientsData.find(patient => patient.id === id);
 };
@@ -34,5 +48,6 @@ export default {
   getEntries,
   getNonSensitivePatientEntries,
   addPatient,
-  getPatientById
+  getPatientById,
+  addNewHealthEntry
 };
