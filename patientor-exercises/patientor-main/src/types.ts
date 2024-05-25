@@ -68,3 +68,4 @@ export type Entry =
 
 
 export type PatientFormValues = Omit<Patient, "id" | "entries">;
+export type HealthCheckFormValues = Omit<HealthCheckEntry, "id">;

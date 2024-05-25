@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { Gender, Patient } from "../../types";
-import { Typography, List, ListItem  } from '@mui/material';
+import { Gender, HealthCheckFormValues, Patient } from "../../types";
+import { Typography, List, ListItem, Button  } from '@mui/material';
 import FemaleIcon from '@mui/icons-material/Female';
 import MaleIcon from '@mui/icons-material/Male';
 
@@ -9,9 +9,16 @@ import {
 } from 'react-router-dom';
 import patientService from "../../services/patients";
 import EntryDetails from "../Entries/EntryDetails";
+import AddEntryForm from "../AddHealthEntryModal/AddEntryForm";
+import AddEntryModal from "../AddHealthEntryModal";
+import axios from "axios";
 
 const PatientPage = () => {
   const [patient, setPatient] = useState<Patient>();
+  const [showAddEntryForm, setShowForm] = useState(false);
+  const [modalOpen, setModalOpen] = useState<boolean>(false);
+  const [error, setError] = useState<string>();
+  
   const id = useParams().id;
   
   useEffect(() => {
@@ -24,7 +31,14 @@ const PatientPage = () => {
     if (id) {
       void fetchPatient(id);
     }
-  }, [id]);
+  }, [id, patient]);
+
+  const openModal = (): void => setModalOpen(true);
+
+  const closeModal = (): void => {
+    setModalOpen(false);
+    setError(undefined);
+  };
 
   const addGenderIcon = (p: Patient) => {
     if (p.gender === Gender.Female) {
@@ -39,6 +53,39 @@ const PatientPage = () => {
       return (<></>);
     }
   };
+
+  const submitNewEntry = async (values: HealthCheckFormValues) => {
+    console.log("Submitting")
+    try {
+      if (id) {
+        const newEntry = await patientService.createNewHealthEntry(values, id);
+        patient!!.entries.concat(newEntry)
+      }
+      setModalOpen(false);
+    } catch (e: unknown) {
+      if (axios.isAxiosError(e)) {
+        if (e?.response?.data && typeof e?.response?.data === "string") {
+          const message = e.response.data.replace('Something went wrong. Error: ', '');
+          console.error(message);
+          setError(message);
+        } else {
+          setError("Unrecognized axios error");
+        }
+      } else {
+        console.error("Unknown error", e);
+        setError("Unknown error");
+      }
+    }
+  };
+
+  const closeForm = () => {
+    console.log(showAddEntryForm)
+    setShowForm(false)
+  }
+
+  const addNewEntry = () => {
+    console.log("adding new entry")
+  }
   
   if (patient) {
     return (
@@ -60,6 +107,11 @@ const PatientPage = () => {
             Entries:
           </Typography>          
         }
+        {showAddEntryForm ? 
+        <AddEntryForm onCancel={closeForm} onSubmit={addNewEntry}></AddEntryForm>
+        :  
+        <div></div>
+      }
         
         <List>
           {patient.entries.map (e => (
@@ -68,6 +120,15 @@ const PatientPage = () => {
             </ListItem>
           ))}
         </List>
+        <AddEntryModal
+          modalOpen={modalOpen}
+          onSubmit={submitNewEntry}
+          error={error}
+          onClose={closeModal}
+        />
+        <Button variant="contained" onClick={() => openModal()}>
+          Add New Entry
+        </Button>
       </div>
     );
   } else {
