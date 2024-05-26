@@ -53,6 +53,7 @@ const PatientPage = () => {
   };
 
   const submitNewEntry = async (values: FormValues) => {
+    setError("");
     try {
       if (id && patient) {
         const newEntry = await patientService.createNewHealthEntry(values, id);
@@ -89,6 +90,7 @@ const PatientPage = () => {
           error={error}
           onClose={closeModal}
           type={addEntryFormType}
+          setError={setError}
         />
         <AddNewEntrySelection
           addEntryFormType={addEntryFormType}

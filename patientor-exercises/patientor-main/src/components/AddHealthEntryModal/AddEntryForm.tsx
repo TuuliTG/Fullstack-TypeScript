@@ -1,5 +1,4 @@
 import { useState, SyntheticEvent } from "react";
-import { Alert } from '@mui/material';
 import { FormValues } from "../../types";
 import { getHealthCheckEntry, getHospitalEntry, getOccupationalEntry } from "../../utils";
 import HealthCheckRatingFormItems from "./HealthCheckRatingFormItems";
@@ -13,14 +12,14 @@ interface Props {
   onCancel: () => void;
   onSubmit: (values: FormValues) => void;
   type: string;
+  setError: (errorMessage: string) => void;
 }
 
-const AddEntryForm = ({ onCancel, onSubmit, type }: Props) => {
+const AddEntryForm = ({ onCancel, onSubmit, type, setError }: Props) => {
   const [description, setDescription] = useState('');
   const [rating, setHealthCheckRating] = useState("");
   const [date, setDate] = useState("");
   const [specialist, setSpecialist] = useState("");
-  const [error, setError] = useState("");
   const [diagnosisCodes, setDiagnosisCodes] = React.useState<string[]>([]);
   const [employerName, setEmployerName] = useState("");
   const [dischargeDate, setDischargeDate] = useState("");
@@ -30,36 +29,29 @@ const AddEntryForm = ({ onCancel, onSubmit, type }: Props) => {
 
   const addEntry = (event: SyntheticEvent) => {
     event.preventDefault();
+    setError("");
     const baseValues = {
       description: description, 
       date: date,
       specialist: specialist,
       diagnosisCodes: diagnosisCodes
     };
-    switch (type) {
-      case ("HealthCheck"):
-        try {
+    try {
+      switch (type) {
+        case ("HealthCheck"):
           onSubmit(getHealthCheckEntry(baseValues, rating));
-        } catch (error: unknown) {
-          setError("Invalid health check rating. Pick a number from 0 to 3");
-        }
-        break;
-      case ("OccupationalHealthcare"):
-        try {  
+          break;
+        case ("OccupationalHealthcare"):
           onSubmit(getOccupationalEntry(baseValues, sickLeaveStart, sickLeaveEnd, employerName));
-        } catch (error: unknown) {
-          setError("Error in creating Occupational entry");
-        }
-        break;
-      case ("Hospital"):
-        try {  
+          break;
+        case ("Hospital"):
           onSubmit(getHospitalEntry(baseValues, dischargeDate, dischargeCriteria));
-        } catch (error: unknown) {
-          setError("error");
-        }
-        break;
-      default:
-        setError("unknown type");
+          break;
+        default:
+          setError("unknown type");
+      }
+    } catch (error: unknown) {
+      setError(`Something went wrong: ${error}`);
     }
   };
 
@@ -85,7 +77,6 @@ const AddEntryForm = ({ onCancel, onSubmit, type }: Props) => {
   
   return (
     <div>
-      {error && <Alert severity="error">{error}</Alert>}
       <form onSubmit={addEntry}>
         <BaseInfoFormItems 
           date={date}

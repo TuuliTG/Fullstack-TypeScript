@@ -9,15 +9,16 @@ interface Props {
   onSubmit: (values: FormValues) => void;
   error?: string;
   type: string;
+  setError: (errorMessage: string) => void;
 }
 
-const AddEntryModal = ({ modalOpen, onClose, onSubmit, error, type }: Props) => (
+const AddEntryModal = ({ modalOpen, onClose, onSubmit, error, type, setError }: Props) => (
   <Dialog fullWidth={true} open={modalOpen} onClose={() => onClose()}>
     <DialogTitle>Add a new entry</DialogTitle>
     <Divider />
     <DialogContent>
       {error && <Alert severity="error">{error}</Alert>}
-      <AddEntryForm onSubmit={onSubmit} onCancel={onClose} type={type}/>
+      <AddEntryForm onSubmit={onSubmit} onCancel={onClose} type={type} setError={setError}/>
     </DialogContent>
   </Dialog>
 );
