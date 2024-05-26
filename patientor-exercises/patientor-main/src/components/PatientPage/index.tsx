@@ -1,17 +1,16 @@
 import { useEffect, useState } from "react";
-import { FormValues, Gender, Patient } from "../../types";
-import { Typography, List, ListItem, Button, FormControl, InputLabel, Select, MenuItem  } from '@mui/material';
-import FemaleIcon from '@mui/icons-material/Female';
-import MaleIcon from '@mui/icons-material/Male';
+import { FormValues, Patient } from "../../types";
+import { Typography, Button, FormControl, InputLabel, Select, MenuItem  } from '@mui/material';
 
 import {
   useParams
 } from 'react-router-dom';
 import patientService from "../../services/patients";
-import EntryDetails from "../Entries/EntryDetails";
 import AddEntryModal from "../AddHealthEntryModal";
 import axios from "axios";
 import AlertDialog from "../AddHealthEntryModal/alertDialog";
+import PatientInfo from "./PatientInfo";
+import EntriesList from "../Entries/EntriesList";
 
 const PatientPage = () => {
   const [patient, setPatient] = useState<Patient>();
@@ -48,20 +47,6 @@ const PatientPage = () => {
     setAddEntryFormType("");
   };
 
-  const addGenderIcon = (p: Patient) => {
-    if (p.gender === Gender.Female) {
-      return (
-        <FemaleIcon/>
-      );
-    } else if (p.gender == Gender.Male) {
-      return (
-        <MaleIcon/>
-      );
-    } else {
-      return (<></>);
-    }
-  };
-
   const handleCloseAlertWindow = () => {
     setAlertDialogOpen(false);
   };
@@ -95,30 +80,8 @@ const PatientPage = () => {
     return (
       <div className="App">
         <AlertDialog open={alertDialogOpen} handleClose={handleCloseAlertWindow}/>
-        <Typography variant="h5" style={{ marginBottom: "0.5em", marginTop: "1em" }}>
-          <b>{patient.name}</b> {addGenderIcon(patient)}
-        </Typography>
-        <Typography>
-          ssh: {patient.ssn}
-          <br></br>
-          occupation: {patient.occupation}
-          <br></br>
-          date of birth: {patient.dateOfBirth}
-        </Typography>
-        { patient.entries.length === 0 ? 
-          <Typography style={{ marginBottom: "0.5em", marginTop: "1em" }}>No entries</Typography>
-          :
-          <Typography variant="h6" style={{ marginBottom: "0.5em", marginTop: "1em" }}>
-            Entries:
-          </Typography>          
-        }
-        <List>
-          {patient.entries.map (e => (
-            <ListItem key={e.id}>
-              <EntryDetails entry={e}></EntryDetails>
-            </ListItem>
-          ))}
-        </List>
+        <PatientInfo patient={patient}/>
+        <EntriesList entries={patient.entries} />
         <AddEntryModal
           modalOpen={modalOpen}
           onSubmit={submitNewEntry}

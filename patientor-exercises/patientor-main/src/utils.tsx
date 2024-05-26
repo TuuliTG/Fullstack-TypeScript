@@ -10,3 +10,4 @@ export const toHealthCheckRating = (text: string): HealthCheckRating => {
   }
   throw new Error('Incorrect healthCheckRating: ' + text);
 };
+
