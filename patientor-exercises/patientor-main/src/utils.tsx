@@ -1,4 +1,4 @@
-import { BaseEntryFormValues, HealthCheckRating, OccupationalFormValues } from "./types";
+import { BaseEntryFormValues, HealthCheckFormValues, HealthCheckRating, HospitalFormValues, OccupationalFormValues } from "./types";
 
 export const toHealthCheckRating = (text: string): HealthCheckRating => {
   const number = Number(text);
@@ -29,4 +29,28 @@ export const getOccupationalEntry = (baseValues: BaseEntryFormValues, sickLeaveS
     newEntryValues.sickLeave = sickLeave;
   }
   return newEntryValues;
+};
+
+export const getHospitalEntry = (baseValues: BaseEntryFormValues, dischargeDate: string, dischargeCriteria: string) => {
+  const type = "Hospital";
+  const newEntry: HospitalFormValues = {
+    ...baseValues,
+    discharge: {
+      date: dischargeDate,
+      criteria: dischargeCriteria
+    },
+    type
+  };
+  return newEntry;
+};
+
+export const getHealthCheckEntry = (baseValues: BaseEntryFormValues, rating: string) => {
+  const type = "HealthCheck";
+  const healthCheckRating = toHealthCheckRating(rating);
+  const newEntry: HealthCheckFormValues = {
+    ...baseValues,
+    type,
+    healthCheckRating
+  };
+  return newEntry;
 };

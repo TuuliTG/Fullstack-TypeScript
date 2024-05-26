@@ -1,7 +1,7 @@
 import { useState, SyntheticEvent } from "react";
 import { Alert } from '@mui/material';
 import { FormValues } from "../../types";
-import { getOccupationalEntry, toHealthCheckRating } from "../../utils";
+import { getHealthCheckEntry, getHospitalEntry, getOccupationalEntry } from "../../utils";
 import HealthCheckRatingFormItems from "./HealthCheckRatingFormItems";
 import OccupationalFormItems from "./OccupationalFormItems";
 import HospitalFormItems from "./HospitalFormItems";
@@ -39,34 +39,21 @@ const AddEntryForm = ({ onCancel, onSubmit, type }: Props) => {
     switch (type) {
       case ("HealthCheck"):
         try {
-          const healthCheckRating = toHealthCheckRating(rating);
-          onSubmit({
-            ...baseValues,
-            type,
-            healthCheckRating
-          });
+          onSubmit(getHealthCheckEntry(baseValues, rating));
         } catch (error: unknown) {
           setError("Invalid health check rating. Pick a number from 0 to 3");
         }
         break;
       case ("OccupationalHealthcare"):
         try {  
-          const newEntryValues = getOccupationalEntry(baseValues, sickLeaveStart, sickLeaveEnd, employerName);
-          onSubmit(newEntryValues);
+          onSubmit(getOccupationalEntry(baseValues, sickLeaveStart, sickLeaveEnd, employerName));
         } catch (error: unknown) {
-          setError("error");
+          setError("Error in creating Occupational entry");
         }
         break;
       case ("Hospital"):
         try {  
-          onSubmit({
-            ...baseValues,
-            discharge: {
-              date: dischargeDate, 
-              criteria: dischargeCriteria
-            },
-            type
-          });
+          onSubmit(getHospitalEntry(baseValues, dischargeDate, dischargeCriteria));
         } catch (error: unknown) {
           setError("error");
         }

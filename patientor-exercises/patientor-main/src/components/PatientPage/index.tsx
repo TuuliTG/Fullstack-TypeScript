@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { FormValues, Patient } from "../../types";
-import { Typography, Button, FormControl, InputLabel, Select, MenuItem  } from '@mui/material';
+import { Typography } from '@mui/material';
 
 import {
   useParams
@@ -11,6 +11,7 @@ import axios from "axios";
 import AlertDialog from "../AddHealthEntryModal/alertDialog";
 import PatientInfo from "./PatientInfo";
 import EntriesList from "../Entries/EntriesList";
+import AddNewEntrySelection from "./AddNewEntrySelection";
 
 const PatientPage = () => {
   const [patient, setPatient] = useState<Patient>();
@@ -89,23 +90,11 @@ const PatientPage = () => {
           onClose={closeModal}
           type={addEntryFormType}
         />
-        <FormControl fullWidth>
-          <InputLabel id="select-label">Add entry type</InputLabel>
-          <Select
-            labelId="select-label"
-            id="select-label"
-            value={addEntryFormType}
-            label="Add new entry"
-            onChange={({ target }) => setAddEntryFormType(target.value)}
-          >
-            <MenuItem value={"HealthCheck"}>HealthCheck</MenuItem>
-            <MenuItem value={"OccupationalHealthcare"}>OccupationalHealthcare</MenuItem>
-            <MenuItem value={"Hospital"}>Hospital</MenuItem>
-          </Select>
-          <Button variant="contained" onClick={() => openModal()}>
-            Add New Entry
-          </Button>
-        </FormControl>
+        <AddNewEntrySelection
+          addEntryFormType={addEntryFormType}
+          setAddEntryFormType={setAddEntryFormType}
+          openModal={openModal}
+        />
       </div>
     );
   } else {
