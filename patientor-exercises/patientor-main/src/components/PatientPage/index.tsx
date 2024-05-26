@@ -11,12 +11,14 @@ import patientService from "../../services/patients";
 import EntryDetails from "../Entries/EntryDetails";
 import AddEntryModal from "../AddHealthEntryModal";
 import axios from "axios";
+import AlertDialog from "../AddHealthEntryModal/alertDialog";
 
 const PatientPage = () => {
   const [patient, setPatient] = useState<Patient>();
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [error, setError] = useState<string>();
   const [addEntryFormType, setAddEntryFormType] = useState("");
+  const [alertDialogOpen, setAlertDialogOpen] = useState(false);
   
   const id = useParams().id;
   
@@ -32,7 +34,13 @@ const PatientPage = () => {
     }
   }, [id, patient]);
 
-  const openModal = (): void => setModalOpen(true);
+  const openModal = (): void => {
+    if (addEntryFormType !== "") {
+      setModalOpen(true);
+    } else {
+      setAlertDialogOpen(true);
+    }
+  };
 
   const closeModal = (): void => {
     setModalOpen(false);
@@ -52,6 +60,10 @@ const PatientPage = () => {
     } else {
       return (<></>);
     }
+  };
+
+  const handleCloseAlertWindow = () => {
+    setAlertDialogOpen(false);
   };
 
   const submitNewEntry = async (values: FormValues) => {
@@ -82,6 +94,7 @@ const PatientPage = () => {
   if (patient) {
     return (
       <div className="App">
+        <AlertDialog open={alertDialogOpen} handleClose={handleCloseAlertWindow}/>
         <Typography variant="h5" style={{ marginBottom: "0.5em", marginTop: "1em" }}>
           <b>{patient.name}</b> {addGenderIcon(patient)}
         </Typography>

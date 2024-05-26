@@ -1,4 +1,4 @@
-import { Input, TextField, Typography } from "@mui/material";
+import { Card, CardContent, Input, TextField, Typography } from "@mui/material";
 
 interface Props {
   employerName: string;
@@ -17,18 +17,23 @@ const OccupationalFormItems = ({setEmployerName, employerName, sickLeaveStart, s
       value={employerName}
       onChange={({ target }) => setEmployerName(target.value)}
     />
-    <Typography>Sick leave beginning from</Typography>
-    <Input
-      value={sickLeaveStart}
-      type="date"
-      onChange={(event) => setSickLeaveStart(event.target.value)} 
-    />
-    <Typography>Sick leave end</Typography>
-    <Input
-      value={sickLeaveEnd}
-      type="date"
-      onChange={(event) => setSickLeaveEnd(event.target.value)} 
-    />
+    <Card>
+      <CardContent>
+        <Typography variant="h6">Sick leave</Typography>
+        <Typography>Start</Typography>
+        <Input
+          value={sickLeaveStart}
+          type="date"
+          onChange={(event) => setSickLeaveStart(event.target.value)} 
+        />
+        <Typography>End</Typography>
+        <Input
+          value={sickLeaveEnd}
+          type="date"
+          onChange={(event) => setSickLeaveEnd(event.target.value)} 
+        />
+      </CardContent>
+    </Card>
     </div>
   );
 };

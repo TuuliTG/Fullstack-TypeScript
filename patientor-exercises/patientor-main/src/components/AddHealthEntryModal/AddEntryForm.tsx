@@ -1,11 +1,12 @@
 import { useState, SyntheticEvent } from "react";
-
 import {  TextField, Grid, Button, Typography, Alert, Input } from '@mui/material';
 import { FormValues, OccupationalFormValues } from "../../types";
-import { parseDiagnosisCodes, toHealthCheckRating } from "../../utils";
+import { toHealthCheckRating } from "../../utils";
 import HealthCheckRatingFormItems from "./HealthCheckRatingFormItems";
 import OccupationalFormItems from "./OccupationalFormItems";
 import HospitalFormItems from "./HospitalFormItems";
+import DiagnosisCodesSelection from "./DiagnosisCodesSelection";
+import React from "react";
 
 interface Props {
   onCancel: () => void;
@@ -19,7 +20,7 @@ const AddEntryForm = ({ onCancel, onSubmit, type }: Props) => {
   const [date, setDate] = useState("");
   const [specialist, setSpecialist] = useState("");
   const [error, setError] = useState("");
-  const [diagnosisCodes, setDiagnosisCodes] = useState("");
+  const [diagnosisCodes, setDiagnosisCodes] = React.useState<string[]>([]);
   const [employerName, setEmployerName] = useState("");
   const [dischargeDate, setDischargeDate] = useState("");
   const [dischargeCriteria, setDischargeCriteria] = useState("");
@@ -32,7 +33,7 @@ const AddEntryForm = ({ onCancel, onSubmit, type }: Props) => {
       description: description, 
       date: date,
       specialist: specialist,
-      diagnosisCodes: diagnosisCodes === "" ? [] : parseDiagnosisCodes(diagnosisCodes)
+      diagnosisCodes: diagnosisCodes
     };
     switch (type) {
       case ("HealthCheck"):
@@ -132,12 +133,7 @@ const AddEntryForm = ({ onCancel, onSubmit, type }: Props) => {
           onChange={({ target }) => setSpecialist(target.value)}
         />
         {typeSpecificModule()}
-        <TextField
-          label="Diagnosis codes"
-          fullWidth
-          value={diagnosisCodes}
-          onChange={({ target }) => setDiagnosisCodes(target.value)}
-        />
+        <DiagnosisCodesSelection setDiagnosisCodes={setDiagnosisCodes} />
         <Grid>
           <Grid item>
             <Button
