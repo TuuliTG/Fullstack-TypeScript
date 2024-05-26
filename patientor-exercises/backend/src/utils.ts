@@ -15,11 +15,14 @@ const parseGender = (gender: unknown): Gender => {
   return gender;
 };
 
-const parseStringField = (value: unknown, fieldName: string): string => {
+const parseStringField = (value: unknown, fieldName: string, minLength: number, maxLength: number): string => {
   if (!isString(value)) {
     throw new Error(`Incorrect or missing ${fieldName}: ${value}`);
   }
-  return value;
+  if (value.length >= minLength && value.length <= maxLength) {
+    return value;
+  }
+  throw new Error(`Value in ${fieldName} was either too short or too long.`);
 };
 
 const isDate = (date: string): boolean => {
@@ -69,11 +72,11 @@ export const toNewPatientEntry = (object: unknown): NewPatientEntry => {
   }
   if ('name' in object && 'dateOfBirth' in object && 'ssn' in object && 'gender' in object && 'occupation' in object)  {
     const newEntry: NewPatientEntry = {
-      name: parseStringField(object.name, "name"),
+      name: parseStringField(object.name, "name", 3, 30),
       dateOfBirth: parseDate(object.dateOfBirth),
       ssn: parseSsn(object.ssn),
       gender: parseGender(object.gender),
-      occupation: parseStringField(object.occupation, "occupation"),
+      occupation: parseStringField(object.occupation, "occupation", 4, 30),
       entries: []
     };
     return newEntry;
@@ -88,8 +91,8 @@ const parseDischarge = (object: unknown): Discharge => {
   if ("date" in object && "criteria" in object) {
     const dischargeObject = {
       date: parseDate(object.date),
-      criteria: parseStringField(object.criteria, "criteria")
-    }
+      criteria: parseStringField(object.criteria, "criteria", 5, 100)
+    };
     return dischargeObject;
   }
   throw new Error('Incorrect or missing data');
@@ -106,7 +109,7 @@ const parseSickLeave = (object: unknown): SickLeave | undefined  => {
     const sickLeave = {
       startDate: parseDate(object.sickLeave.startDate),
       endDate: parseDate(object.sickLeave.endDate)
-    }
+    };
     return sickLeave;
   }
   throw new Error('Incorrect or missing sick leave data');
@@ -123,11 +126,11 @@ export const toNewEntry = (object: unknown): NewEntryWithoutId => {
     && 'specialist' in object
   ) {
     const skeleton = {
-      description: parseStringField(object.description, "description"),
+      description: parseStringField(object.description, "description", 5, 300),
       date: parseDate(object.date),
-      specialist: parseStringField(object.specialist, "specialist"),
+      specialist: parseStringField(object.specialist, "specialist", 4, 30),
       diagnosisCodes: parseDiagnosisCodes(object),
-    }
+    };
 
     switch (object.type) {
       case "HealthCheck":
@@ -136,7 +139,7 @@ export const toNewEntry = (object: unknown): NewEntryWithoutId => {
             ...skeleton,
             type: object.type,
             healthCheckRating: parseHealthCheckRating(object.healthCheckRating)
-          }
+          };
           return healthcheckEntry;
         }
         throw new Error('Incorrect data: healthCheckRating is missing');
@@ -146,7 +149,7 @@ export const toNewEntry = (object: unknown): NewEntryWithoutId => {
             ...skeleton,
             type: object.type,
             discharge: parseDischarge(object.discharge)
-          }
+          };
           return hospitalEntry;
         }
         throw new Error('Incorrect data: discharge is missing');
@@ -155,9 +158,9 @@ export const toNewEntry = (object: unknown): NewEntryWithoutId => {
           const occupationalEntry = {
             ...skeleton,
             type: object.type,
-            employerName: parseStringField(object.employerName, "employerName"),
+            employerName: parseStringField(object.employerName, "employerName", 2, 30),
             sickLeave: parseSickLeave(object)
-          }
+          };
           return occupationalEntry;
         }
         throw new Error('Incorrect data: employerName is missing');

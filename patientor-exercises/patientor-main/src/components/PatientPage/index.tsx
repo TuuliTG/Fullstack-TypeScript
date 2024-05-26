@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { Gender, HealthCheckFormValues, Patient } from "../../types";
-import { Typography, List, ListItem, Button  } from '@mui/material';
+import { FormValues, Gender, Patient } from "../../types";
+import { Typography, List, ListItem, Button, FormControl, InputLabel, Select, MenuItem  } from '@mui/material';
 import FemaleIcon from '@mui/icons-material/Female';
 import MaleIcon from '@mui/icons-material/Male';
 
@@ -9,15 +9,14 @@ import {
 } from 'react-router-dom';
 import patientService from "../../services/patients";
 import EntryDetails from "../Entries/EntryDetails";
-import AddEntryForm from "../AddHealthEntryModal/AddEntryForm";
 import AddEntryModal from "../AddHealthEntryModal";
 import axios from "axios";
 
 const PatientPage = () => {
   const [patient, setPatient] = useState<Patient>();
-  const [showAddEntryForm, setShowForm] = useState(false);
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [error, setError] = useState<string>();
+  const [addEntryFormType, setAddEntryFormType] = useState("");
   
   const id = useParams().id;
   
@@ -38,6 +37,7 @@ const PatientPage = () => {
   const closeModal = (): void => {
     setModalOpen(false);
     setError(undefined);
+    setAddEntryFormType("");
   };
 
   const addGenderIcon = (p: Patient) => {
@@ -54,14 +54,15 @@ const PatientPage = () => {
     }
   };
 
-  const submitNewEntry = async (values: HealthCheckFormValues) => {
-    console.log("Submitting")
+  const submitNewEntry = async (values: FormValues) => {
     try {
-      if (id) {
+      if (id && patient) {
         const newEntry = await patientService.createNewHealthEntry(values, id);
-        patient!!.entries.concat(newEntry)
+        patient.entries.concat(newEntry);
       }
       setModalOpen(false);
+      setAddEntryFormType("");
+      setError(undefined);
     } catch (e: unknown) {
       if (axios.isAxiosError(e)) {
         if (e?.response?.data && typeof e?.response?.data === "string") {
@@ -77,15 +78,6 @@ const PatientPage = () => {
       }
     }
   };
-
-  const closeForm = () => {
-    console.log(showAddEntryForm)
-    setShowForm(false)
-  }
-
-  const addNewEntry = () => {
-    console.log("adding new entry")
-  }
   
   if (patient) {
     return (
@@ -107,12 +99,6 @@ const PatientPage = () => {
             Entries:
           </Typography>          
         }
-        {showAddEntryForm ? 
-        <AddEntryForm onCancel={closeForm} onSubmit={addNewEntry}></AddEntryForm>
-        :  
-        <div></div>
-      }
-        
         <List>
           {patient.entries.map (e => (
             <ListItem key={e.id}>
@@ -125,10 +111,25 @@ const PatientPage = () => {
           onSubmit={submitNewEntry}
           error={error}
           onClose={closeModal}
+          type={addEntryFormType}
         />
-        <Button variant="contained" onClick={() => openModal()}>
-          Add New Entry
-        </Button>
+        <FormControl fullWidth>
+          <InputLabel id="select-label">Add entry type</InputLabel>
+          <Select
+            labelId="select-label"
+            id="select-label"
+            value={addEntryFormType}
+            label="Add new entry"
+            onChange={({ target }) => setAddEntryFormType(target.value)}
+          >
+            <MenuItem value={"HealthCheck"}>HealthCheck</MenuItem>
+            <MenuItem value={"OccupationalHealthcare"}>OccupationalHealthcare</MenuItem>
+            <MenuItem value={"Hospital"}>Hospital</MenuItem>
+          </Select>
+          <Button variant="contained" onClick={() => openModal()}>
+            Add New Entry
+          </Button>
+        </FormControl>
       </div>
     );
   } else {

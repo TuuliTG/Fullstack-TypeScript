@@ -1,106 +1,120 @@
 import { useState, SyntheticEvent } from "react";
 
-import {  TextField, Grid, Button, Typography, Alert } from '@mui/material';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import 'dayjs/locale/fi';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
-import { HealthCheckFormValues, HealthCheckRating } from "../../types";
+import {  TextField, Grid, Button, Typography, Alert, Input } from '@mui/material';
+import { FormValues, OccupationalFormValues } from "../../types";
+import { parseDiagnosisCodes, toHealthCheckRating } from "../../utils";
+import HealthCheckRatingFormItems from "./HealthCheckRatingFormItems";
+import OccupationalFormItems from "./OccupationalFormItems";
+import HospitalFormItems from "./HospitalFormItems";
 
 interface Props {
   onCancel: () => void;
-  onSubmit: (values: HealthCheckFormValues) => void;
+  onSubmit: (values: FormValues) => void;
+  type: string;
 }
 
-const AddEntryForm = ({ onCancel, onSubmit }: Props) => {
+const AddEntryForm = ({ onCancel, onSubmit, type }: Props) => {
   const [description, setDescription] = useState('');
-  const [rating, setHealthCheckRating] = useState("")
+  const [rating, setHealthCheckRating] = useState("");
   const [date, setDate] = useState("");
-  const [specialist, setSpecialist] = useState("")
-  const [error, setError] = useState("")
-  const [diagnosisCodes, setDiagnosisCodes] = useState("")
+  const [specialist, setSpecialist] = useState("");
+  const [error, setError] = useState("");
+  const [diagnosisCodes, setDiagnosisCodes] = useState("");
+  const [employerName, setEmployerName] = useState("");
+  const [dischargeDate, setDischargeDate] = useState("");
+  const [dischargeCriteria, setDischargeCriteria] = useState("");
+  const [sickLeaveStart, setSickLeaveStart] = useState("");
+  const [sickLeaveEnd, setSickLeaveEnd] = useState("");
   
-  const type = "HealthCheck"
   const addEntry = (event: SyntheticEvent) => {
     event.preventDefault();
-    console.log(`trying to add new entry: ${date}, ${description}, ${specialist}`)
-    try {
-      const healthCheckRating = toHealthCheckRating(rating)
-      onSubmit({
-        description,
-        type,
-        healthCheckRating,
-        date,
-        specialist,
-        diagnosisCodes: parseDiagnosisCodes(diagnosisCodes)
-      });
-    } catch (error: unknown) {
-      setError("Invalid health check rating. Pick a number from 0 to 3")
+    const baseValues = {
+      description: description, 
+      date: date,
+      specialist: specialist,
+      diagnosisCodes: diagnosisCodes === "" ? [] : parseDiagnosisCodes(diagnosisCodes)
+    };
+    switch (type) {
+      case ("HealthCheck"):
+        try {
+          const healthCheckRating = toHealthCheckRating(rating);
+          onSubmit({
+            ...baseValues,
+            type,
+            healthCheckRating
+          });
+        } catch (error: unknown) {
+          setError("Invalid health check rating. Pick a number from 0 to 3");
+        }
+        break;
+      case ("OccupationalHealthcare"):
+        let sickLeave;
+        if (sickLeaveStart !== "" && sickLeaveEnd !== "") {
+          sickLeave = {
+            startDate: sickLeaveStart,
+            endDate: sickLeaveEnd
+          };
+        }
+        const newEntryValues: OccupationalFormValues = {
+          ...baseValues,
+            employerName: employerName,
+            type
+        };
+        if (sickLeave) {
+          newEntryValues.sickLeave = sickLeave;
+        }
+        try {  
+          onSubmit(newEntryValues);
+        } catch (error: unknown) {
+          setError("error");
+        }
+        break;
+      case ("Hospital"):
+        try {  
+          onSubmit({
+            ...baseValues,
+            discharge: {
+              date: dischargeDate, 
+              criteria: dischargeCriteria
+            },
+            type
+          });
+        } catch (error: unknown) {
+          setError("error");
+        }
+        break;
+      default:
+        setError("unknown type");
     }
   };
 
-  const isDate = (date: string): boolean => {
-    const dateFormat = /^\d{4}-\d{2}-\d{2}$/;
-    if (!dateFormat.test(date)) {
-      return false;
+  const typeSpecificModule = () => {
+    switch (type) {
+      case ("HealthCheck"):
+        return (
+          <HealthCheckRatingFormItems rating={rating} setHealthCheckRating={setHealthCheckRating}/>
+        );
+      case ("OccupationalHealthcare"):
+        return <OccupationalFormItems 
+          employerName={employerName} 
+          setEmployerName={setEmployerName} 
+          sickLeaveStart={sickLeaveStart}
+          setSickLeaveStart={setSickLeaveStart}
+          sickLeaveEnd={sickLeaveEnd}
+          setSickLeaveEnd={setSickLeaveEnd}
+          />;
+      case ("Hospital"):
+        return <HospitalFormItems setDischargeCriteria={setDischargeCriteria} setDischargeDate={setDischargeDate} dischargeCriteria={dischargeCriteria} dischargeDate={dischargeDate}/>;
     }
-    return true;
   };
-
-  const parseDiagnosisCodes = (codes: string): string[] => {
-    const stringArray = codes.split(" ")
-    return stringArray
-  }
-
-  const isString = (text: unknown): text is string => {
-    return typeof text === 'string' || text instanceof String;
-  };
-
-  const toHealthCheckRating = (text: string): HealthCheckRating => {
-    const number = Number(text)
-    if (number) {
-      if (number >= 0 && number <= 3) {
-        return number
-      }
-      throw new Error('Incorrect healthCheckRating: ' + rating);
-    }
-    throw new Error('Incorrect healthCheckRating: ' + rating);
-  }
-
-  
-  const parseDate = (event: any) => {
-    console.log(event)
-    const dateString = `${event.$y}-${event.$m}-${event.$D}`
-    console.log(dateString)
-    const parsed = event.$d.toISOString();
-    console.log(parsed)
-    if (!isString(date) || !isDate(date)) {
-        throw new Error('Incorrect date: ' + date);
-    }
-    setDate(date);
-  };
-
-  function BasicDatePicker() {
-    return (
-      <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="fi">
-        <DemoContainer components={['DatePicker']}>
-          <DatePicker 
-            label="Date of the health check" 
-            format="YYYY-MM-DD"
-            value={date} 
-            onChange={parseDate}/>
-        </DemoContainer>
-      </LocalizationProvider>
-    );
-  }
   
   return (
     <div>
       {error && <Alert severity="error">{error}</Alert>}
       <form onSubmit={addEntry}>
+        
         <Typography>Date of the appointment</Typography>
-        <input
+        <Input
           value={date}
           type="date"
           onChange={(event) => setDate(event.target.value)} 
@@ -117,12 +131,7 @@ const AddEntryForm = ({ onCancel, onSubmit }: Props) => {
           value={specialist}
           onChange={({ target }) => setSpecialist(target.value)}
         />
-        <TextField
-          label="Health check rating"
-          fullWidth 
-          value={rating}
-          onChange={({ target }) => setHealthCheckRating(target.value)}
-        />
+        {typeSpecificModule()}
         <TextField
           label="Diagnosis codes"
           fullWidth
@@ -155,7 +164,7 @@ const AddEntryForm = ({ onCancel, onSubmit }: Props) => {
         </Grid>
       </form>
     </div>
-  )
+  );
 };
 
 export default AddEntryForm;

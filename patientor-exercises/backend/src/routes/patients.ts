@@ -29,7 +29,7 @@ router.post('/:id/entries', (req, res) => {
   try {
     const id = req.params.id;
     const newEntry: NewEntryWithoutId = toNewEntry(req.body);
-    const addedEntry = patientsService.addNewHealthEntry(newEntry, id)
+    const addedEntry = patientsService.addNewHealthEntry(newEntry, id);
     res.json(addedEntry);
   } catch (error: unknown) {
     let errorMessage = 'Something went wrong.';

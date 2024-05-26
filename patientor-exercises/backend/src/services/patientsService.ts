@@ -34,9 +34,9 @@ const addNewHealthEntry = ( entry: NewEntryWithoutId, patientId: string ): Entry
 
   patientsData.forEach((patient) => { 
     if (patient.id === patientId) {
-      patient.entries.push(newEntry)
+      patient.entries.push(newEntry);
     }
-  }) 
+  });
   return newEntry;
 };
 
