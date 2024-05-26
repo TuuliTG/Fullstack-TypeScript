@@ -1,12 +1,13 @@
 import { useState, SyntheticEvent } from "react";
-import {  TextField, Grid, Button, Typography, Alert, Input } from '@mui/material';
-import { FormValues, OccupationalFormValues } from "../../types";
-import { toHealthCheckRating } from "../../utils";
+import { Alert } from '@mui/material';
+import { FormValues } from "../../types";
+import { getOccupationalEntry, toHealthCheckRating } from "../../utils";
 import HealthCheckRatingFormItems from "./HealthCheckRatingFormItems";
 import OccupationalFormItems from "./OccupationalFormItems";
 import HospitalFormItems from "./HospitalFormItems";
-import DiagnosisCodesSelection from "./DiagnosisCodesSelection";
 import React from "react";
+import BaseInfoFormItems from "./BaseInfoFormItems";
+import FormButtons from "./FormButtons";
 
 interface Props {
   onCancel: () => void;
@@ -26,7 +27,7 @@ const AddEntryForm = ({ onCancel, onSubmit, type }: Props) => {
   const [dischargeCriteria, setDischargeCriteria] = useState("");
   const [sickLeaveStart, setSickLeaveStart] = useState("");
   const [sickLeaveEnd, setSickLeaveEnd] = useState("");
-  
+
   const addEntry = (event: SyntheticEvent) => {
     event.preventDefault();
     const baseValues = {
@@ -49,22 +50,8 @@ const AddEntryForm = ({ onCancel, onSubmit, type }: Props) => {
         }
         break;
       case ("OccupationalHealthcare"):
-        let sickLeave;
-        if (sickLeaveStart !== "" && sickLeaveEnd !== "") {
-          sickLeave = {
-            startDate: sickLeaveStart,
-            endDate: sickLeaveEnd
-          };
-        }
-        const newEntryValues: OccupationalFormValues = {
-          ...baseValues,
-            employerName: employerName,
-            type
-        };
-        if (sickLeave) {
-          newEntryValues.sickLeave = sickLeave;
-        }
         try {  
+          const newEntryValues = getOccupationalEntry(baseValues, sickLeaveStart, sickLeaveEnd, employerName);
           onSubmit(newEntryValues);
         } catch (error: unknown) {
           setError("error");
@@ -113,51 +100,17 @@ const AddEntryForm = ({ onCancel, onSubmit, type }: Props) => {
     <div>
       {error && <Alert severity="error">{error}</Alert>}
       <form onSubmit={addEntry}>
-        
-        <Typography>Date of the appointment</Typography>
-        <Input
-          value={date}
-          type="date"
-          onChange={(event) => setDate(event.target.value)} 
-        />
-        <TextField
-          label="Description"
-          fullWidth 
-          value={description}
-          onChange={({ target }) => setDescription(target.value)}
-        />
-        <TextField
-          label="Specialist"
-          fullWidth 
-          value={specialist}
-          onChange={({ target }) => setSpecialist(target.value)}
+        <BaseInfoFormItems 
+          date={date}
+          setDate = {setDate}
+          setDescription = {setDescription}
+          description = {description}
+          specialist = {specialist}
+          setSpecialist = {setSpecialist}
+          setDiagnosisCodes = {setDiagnosisCodes}
         />
         {typeSpecificModule()}
-        <DiagnosisCodesSelection setDiagnosisCodes={setDiagnosisCodes} />
-        <Grid>
-          <Grid item>
-            <Button
-              color="secondary"
-              variant="contained"
-              style={{ float: "left" }}
-              type="button"
-              onClick={onCancel}
-            >
-              Cancel
-            </Button>
-          </Grid>
-          <Grid item>
-            <Button
-              style={{
-                float: "right",
-              }}
-              type="submit"
-              variant="contained"
-            >
-              Add
-            </Button>
-          </Grid>
-        </Grid>
+        <FormButtons onCancel={onCancel}/>
       </form>
     </div>
   );
